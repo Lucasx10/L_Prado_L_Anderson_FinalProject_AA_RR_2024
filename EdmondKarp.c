@@ -33,6 +33,30 @@ bool hasPath(int graph[MAX_NODES][MAX_NODES], int source, int sink) {
     return false;
 }
 
+void generateAssignmentDotFile(int residualGraph[MAX_NODES][MAX_NODES], int originalGraph[MAX_NODES][MAX_NODES], const char* filename) {
+    FILE *file = fopen(filename, "w");
+    if (!file) {
+        printf("Erro ao abrir o arquivo %s para escrita!\n", filename);
+        return;
+    }
+
+    fprintf(file, "digraph Assignment {\n");
+    fprintf(file, "  node [shape=circle];\n");
+
+    // Iterar sobre os nós de tarefas e funcionários
+    for (int taskNode = 2; taskNode <= numberOfTasks + 1; taskNode++) {
+        for (int workerNode = numberOfTasks + 3; workerNode <= numberOfNodes; workerNode++) {
+            // Se a aresta foi usada e está agora com fluxo zero
+            if (originalGraph[taskNode][workerNode] == 1 && residualGraph[taskNode][workerNode] == 0) {
+                fprintf(file, "  Tarefa%d -> Funcionario%d;\n", taskNode - 1, workerNode - numberOfTasks - 2);
+            }
+        }
+    }
+
+    fprintf(file, "}\n");
+    fclose(file);
+}
+
 void generateOutput(int residualGraph[MAX_NODES][MAX_NODES], int originalGraph[MAX_NODES][MAX_NODES]) {
     for (int i = 2; i <= numberOfTasks + 1; i++) {
         for (int j = numberOfTasks + 3; j <= numberOfNodes; j++) {
@@ -68,6 +92,7 @@ void edmondsKarp(int graph[MAX_NODES][MAX_NODES], int source, int sink) {
     }
 
     generateOutput(residualGraph, graph);
+    generateAssignmentDotFile(residualGraph, graph, "EdmondKarpGraph.dot");
 }
 
 void getGraph() {
