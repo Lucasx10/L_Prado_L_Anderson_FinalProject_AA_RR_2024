@@ -28,16 +28,31 @@ O problema é modelado como um grafo bipartido onde:
 
 1. **Compilação**:
    ```sh
-   gcc FordFulkerson.c -o FordFulkerson.exe
+   gcc FordFulkerson.c -o FordFulkerson
+   ```
+   ```sh
+   gcc EdmondKarp.c -o EdmondKarp
+   ```
 2. **Execução**:
    ```sh
-    ./FordFulkerson.exe
+    ./FordFulkerson
+    ./EdmondKarp
+    ```
 3. **Instruções**:
     - Digite o número de funcionários.
     - Digite o número de tarefas.
     - Para cada tarefa, insira a lista de funcionários que podem concluir a tarefa (separados por espaço, termine com 0).
+3. **Visualização do grafo com GraphVIZ**:
+    - Instale o pacote da biblioteca
+    ```sh
+    sudo apt-get install graphviz
+    ```
 
+   - Gere o arquivo de imagem para visualização do grafo
 
+    ```sh
+    dot -Tpng <nome-arquivo>.dot -o <nome-arquivo>
+    ```
 
 ## Referencias
 - https://github.com/nirajdewani/Task-Allocator-using-Maximum-Bipartite-Matching
