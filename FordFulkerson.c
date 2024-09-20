@@ -45,36 +45,37 @@ void generateAssignmentDotFile(int residualGraph[MAX_NODES][MAX_NODES], int orig
 }
 
 
-// Função para verificar se existe um caminho aumentado usando BFS (Busca em Largura)
+// Função recursiva DFS para verificar se existe um caminho aumentado
+bool dfsVisit(int graph[MAX_NODES][MAX_NODES], int u, int sink, bool visited[MAX_NODES]) {
+    visited[u] = true;  // Marca o nó como visitado
+
+    if (u == sink) {
+        return true;  // Se chegou ao nó de destino, retorna true
+    }
+
+    for (int v = 1; v <= numberOfNodes; v++) {
+        // Se v não foi visitado e há capacidade na aresta u-v
+        if (!visited[v] && graph[u][v] > 0) {
+            parent[v] = u;  // Define o pai de v como u
+            if (dfsVisit(graph, v, sink, visited)) {
+                return true;  // Se encontrou o caminho, retorna true
+            }
+        }
+    }
+    return false;  // Se não encontrou caminho, retorna false
+}
+
+// Função para verificar se existe um caminho aumentado usando DFS
 bool hasPath(int graph[MAX_NODES][MAX_NODES], int source, int sink) {
     bool visited[MAX_NODES] = {false};  // Array para marcar nós visitados
-    int queue[MAX_NODES], front = 0, rear = 0;
-    
+
     // Inicializa o array de pais
     for (int i = 0; i <= numberOfNodes; i++) {
         parent[i] = -1;
     }
-    
-    // Adiciona o nó fonte na fila
-    queue[rear++] = source;
-    visited[source] = true;
-    parent[source] = -1;
 
-    // BFS para encontrar o caminho aumentado
-    while (front < rear) {
-        int u = queue[front++];  // Remove o nó da frente da fila
-        for (int v = 1; v <= numberOfNodes; v++) {
-            // Se o nó v não foi visitado e há capacidade na aresta u-v
-            if (!visited[v] && graph[u][v] > 0) {
-                queue[rear++] = v;  // Adiciona o nó v na fila
-                parent[v] = u;  // Define o pai de v como u
-                visited[v] = true;
-                if (v == sink) return true;  // Se chegou ao nó destino, retorna true
-            }
-        }
-    }
-
-    return false;  // Se não encontrou caminho, retorna false
+    // Chama a função recursiva DFS
+    return dfsVisit(graph, source, sink, visited);
 }
 
 // Função principal do algoritmo Ford-Fulkerson
