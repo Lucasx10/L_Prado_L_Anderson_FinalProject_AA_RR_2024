@@ -42,7 +42,7 @@ O problema é modelado como um grafo bipartido onde:
     - Digite o número de funcionários.
     - Digite o número de tarefas.
     - Para cada tarefa, insira a lista de funcionários que podem concluir a tarefa (separados por espaço, termine com 0).
-3. **Visualização do grafo com GraphVIZ**:
+4. **Visualização do grafo com GraphVIZ**:
     - Instale o pacote da biblioteca
     ```sh
     sudo apt-get install graphviz
@@ -54,5 +54,10 @@ O problema é modelado como um grafo bipartido onde:
     dot -Tpng <nome-arquivo>.dot -o <nome-arquivo>
     ```
 
-## Referencias
+## Referências
 - https://github.com/nirajdewani/Task-Allocator-using-Maximum-Bipartite-Matching
+
+### To do list
+- [ ] Artigo
+- [ ] Cálculo função de custo
+- [ ] Benchmark
