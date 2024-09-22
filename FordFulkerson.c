@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <time.h>
 
 #define MAX_NODES 100
 
@@ -14,7 +15,7 @@ void generateOutput(int residualGraph[MAX_NODES][MAX_NODES], int originalGraph[M
         for (int j = numberOfTasks + 3; j < numberOfNodes + 3; j++) {
             // Se a aresta foi usada e está agora com fluxo zero
             if (originalGraph[i][j] == 1 && residualGraph[i][j] == 0) {
-                printf("TaskID %d : Worker ID %d\n", i - 1, j - numberOfTasks - 2);
+                // printf("TaskID %d : Worker ID %d\n", i - 1, j - numberOfTasks - 2);
             }
         }
     }
@@ -114,13 +115,15 @@ void fordFulkerson(int graph[MAX_NODES][MAX_NODES], int source, int sink) {
 
 // Função para ler o grafo a partir da entrada padrão
 void getGraph() {
+    clock_t inicio, fim;
+    double tempo_decorrido;
     int graph[MAX_NODES][MAX_NODES] = {0};  // Matriz de adjacência inicializada com zeros
     
     int numberOfWorkers;
-    printf("Digite o numero de Funcionarios: ");
+    // printf("Digite o numero de Funcionarios: ");
     scanf("%d", &numberOfWorkers);
     
-    printf("Digite o numero de Tarefas: ");
+    // printf("Digite o numero de Tarefas: ");
     scanf("%d", &numberOfTasks);
 
     numberOfNodes = numberOfWorkers + numberOfTasks + 3;  // Calcula o número total de nós
@@ -144,7 +147,7 @@ void getGraph() {
 
     // Conecta nós de tarefas e trabalhadores com base na entrada do usuário
     for (int i = 0; i < numberOfTasks; i++) {
-        printf("Funcionarios que concluem a Tarefa %d (separados por espaço, termine com 0): ", i + 1);
+        // printf("Funcionarios que concluem a Tarefa %d (separados por espaço, termine com 0): ", i + 1);
         int workerID;
         while (scanf("%d", &workerID) && workerID != 0) {
             if (workerID > 0 && workerID <= numberOfWorkers) {
@@ -157,7 +160,12 @@ void getGraph() {
     }   
 
     // Executa o algoritmo Ford-Fulkerson
+    inicio = clock();
     fordFulkerson(graph, 1, numberOfTasks + 2);
+    fim = clock();
+
+    tempo_decorrido = (double)(fim - inicio) / CLOCKS_PER_SEC;
+    printf("%.10f\n", tempo_decorrido);
 
 }
 
