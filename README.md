@@ -51,7 +51,7 @@ O problema é modelado como um grafo bipartido onde:
    - Gere o arquivo de imagem para visualização do grafo
 
     ```sh
-    dot -Tpng <nome-arquivo>.dot -o <nome-arquivo>
+    dot -Tpng <nome-arquivo>.dot -o <nome-arquivo>.png
     ```
 
 ## Referências
