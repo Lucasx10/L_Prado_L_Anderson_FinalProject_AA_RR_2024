@@ -4,19 +4,22 @@
 #include <limits.h>
 #include <time.h>
 
-#define MAX_NODES 200
-
 int numberOfNodes, numberOfEmployees, numberOfTasks;
-int parent[MAX_NODES];
+int *parent;
 
-bool hasPath(int graph[MAX_NODES][MAX_NODES], int source, int sink) {
-    bool visited[MAX_NODES] = {false};
-    int queue[MAX_NODES], front = 0, rear = 0;
+// Função para verificar se há um caminho usando BFS
+bool hasPath(int **graph, int source, int sink) {
+    bool *visited = (bool *)malloc((numberOfNodes + 1) * sizeof(bool));
+    int *queue = (int *)malloc((numberOfNodes + 1) * sizeof(int));
+    int front = 0, rear = 0;
 
+    // Inicializa o array de pais
     for (int i = 0; i <= numberOfNodes; i++) {
         parent[i] = -1;
+        visited[i] = false;
     }
 
+    // Inicia a BFS
     queue[rear++] = source;
     visited[source] = true;
 
@@ -27,14 +30,17 @@ bool hasPath(int graph[MAX_NODES][MAX_NODES], int source, int sink) {
                 queue[rear++] = v;
                 parent[v] = u;
                 visited[v] = true;
-                if (v == sink) return true;
+                if (v == sink) return true; // Se alcançamos o sumidouro
             }
         }
     }
-    return false;
+    free(visited);
+    free(queue);
+    return false; // Se não há caminho
 }
 
-void generateAssignmentDotFile(int residualGraph[MAX_NODES][MAX_NODES], int originalGraph[MAX_NODES][MAX_NODES], const char* filename) {
+// Função para gerar o arquivo dot com as atribuições
+void generateAssignmentDotFile(int **residualGraph, int **originalGraph, const char* filename) {
     FILE *file = fopen(filename, "w");
     if (!file) {
         printf("Erro ao abrir o arquivo %s para escrita!\n", filename);
@@ -58,33 +64,41 @@ void generateAssignmentDotFile(int residualGraph[MAX_NODES][MAX_NODES], int orig
     fclose(file);
 }
 
-void generateOutput(int residualGraph[MAX_NODES][MAX_NODES], int originalGraph[MAX_NODES][MAX_NODES]) {
+// Gera a saída final com as atribuições de tarefas
+void generateOutput(int **residualGraph, int **originalGraph) {
     for (int i = 2; i <= numberOfTasks + 1; i++) {
         for (int j = numberOfTasks + 3; j <= numberOfNodes; j++) {
             // Se a aresta foi usada e está agora com fluxo zero
             if (originalGraph[i][j] == 1 && residualGraph[i][j] == 0) {
-                //printf("TaskID %d : Worker ID %d\n", i - 1, j - numberOfTasks - 2);
+                printf("TaskID %d : Worker ID %d\n", i - 1, j - numberOfTasks - 2);
             }
         }
     }
 }
 
-void edmondsKarp(int graph[MAX_NODES][MAX_NODES], int source, int sink) {
-    int residualGraph[MAX_NODES][MAX_NODES];
+void edmondsKarp(int **graph, int source, int sink) {
+    int **residualGraph = (int **)malloc((numberOfNodes + 1) * sizeof(int *));
+    for (int i = 0; i <= numberOfNodes; i++) {
+        residualGraph[i] = (int *)malloc((numberOfNodes + 1) * sizeof(int));
+    }
 
+    // Inicializa o grafo residual com o original
     for (int i = 1; i <= numberOfNodes; i++) {
         for (int j = 1; j <= numberOfNodes; j++) {
             residualGraph[i][j] = graph[i][j];
         }
     }
 
+    // Enquanto houver caminho no grafo residual
     while (hasPath(residualGraph, source, sink)) {
         int pathFlow = INT_MAX;
+        // Encontra o fluxo mínimo no caminho encontrado
         for (int v = sink; v != source; v = parent[v]) {
             int u = parent[v];
             pathFlow = pathFlow < residualGraph[u][v] ? pathFlow : residualGraph[u][v];
         }
 
+        // Atualiza as capacidades no grafo residual
         for (int v = sink; v != source; v = parent[v]) {
             int u = parent[v];
             residualGraph[u][v] -= pathFlow;
@@ -92,49 +106,88 @@ void edmondsKarp(int graph[MAX_NODES][MAX_NODES], int source, int sink) {
         }
     }
 
-    generateOutput(residualGraph, graph);
-    generateAssignmentDotFile(residualGraph, graph, "EdmondKarpGraph.dot");
+    //Para visualizar as atribuições das tarefas via terminal basta descomentar a linha abaixo
+    // generateOutput(residualGraph, graph);
+    //Para gerar o arquivo DotFile basta descomentar a linha abaixo 
+    // generateAssignmentDotFile(residualGraph, graph, "EdmondKarpGraph.dot");
+
+    // Libera a memória alocada dinamicamente para o grafo residual
+    for (int i = 0; i <= numberOfNodes; i++) {
+        free(residualGraph[i]);
+    }
+    free(residualGraph);
 }
 
-void getGraph() {
+// Função para ler o grafo a partir do arquivo
+void getGraph(const char *filename) {
     clock_t inicio, fim;
     double tempo_decorrido;
 
-    int graph[MAX_NODES][MAX_NODES] = {0};
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        perror("Erro ao abrir o arquivo");
+        exit(EXIT_FAILURE);
+    }
 
-    //printf("Digite o numero de Funcionarios: ");
-    scanf("%d", &numberOfEmployees);
+    // Lê o número de funcionários e tarefas
+    if (fscanf(file, "%d", &numberOfEmployees) != 1) {
+        fprintf(stderr, "Erro ao ler o número de funcionários.\n");
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
 
-    //printf("Digite o numero de Tarefas: ");
-    scanf("%d", &numberOfTasks);
+    if (fscanf(file, "%d", &numberOfTasks) != 1) {
+        fprintf(stderr, "Erro ao ler o número de tarefas.\n");
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
 
     numberOfNodes = numberOfEmployees + numberOfTasks + 3;
 
+    if (numberOfNodes > 2500) {
+        fprintf(stderr, "Numero de nos (%d) excede o limite maximo (%d).\n", numberOfNodes, 1500);
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+
+    // Aloca dinamicamente a matriz `graph`
+    int **graph = (int **)malloc((numberOfNodes + 1) * sizeof(int *));
+    for (int i = 0; i <= numberOfNodes; i++) {
+        graph[i] = (int *)malloc((numberOfNodes + 1) * sizeof(int));
+    }
+
+    // Inicializa o grafo com zeros
     for (int i = 0; i <= numberOfNodes; i++) {
         for (int j = 0; j <= numberOfNodes; j++) {
             graph[i][j] = 0;
         }
     }
 
+    // Conexões da fonte para as tarefas
     for (int i = 2; i <= numberOfTasks + 1; i++) {
         graph[1][i] = 1;
     }
 
+    // Conexões dos funcionários para o sumidouro
     for (int i = numberOfTasks + 3; i <= numberOfNodes; i++) {
         graph[i][numberOfTasks + 2] = 1;
     }
 
+    // Leitura das conexões tarefas-funcionários do arquivo
     for (int i = 0; i < numberOfTasks; i++) {
-        //printf("Funcionarios que concluem a Tarefa %d (separados por espaço, termine com 0): ", i + 1);
         int workerID;
-        while (scanf("%d", &workerID) && workerID != 0) {
+        while (fscanf(file, "%d", &workerID) == 1 && workerID != 0) {
             if (workerID > 0 && workerID <= numberOfEmployees) {
                 int columnNumber = workerID + numberOfTasks + 2;
-                graph[i + 2][columnNumber] = 1;
+                if (columnNumber <= numberOfNodes) {  // Verifica se o nó está dentro do limite
+                    graph[i + 2][columnNumber] = 1;
+                }
             }
         }
-        while (getchar() != '\n');
-    }   
+    }
+
+    // Aloca dinamicamente o array `parent`
+    parent = (int *)malloc((numberOfNodes + 1) * sizeof(int));
 
     inicio = clock();
     edmondsKarp(graph, 1, numberOfTasks + 2);
@@ -142,10 +195,25 @@ void getGraph() {
 
     tempo_decorrido = (double)(fim - inicio) / CLOCKS_PER_SEC;
 
+    // Exibe o tempo decorrido
     printf("%.10f\n", tempo_decorrido);
+
+    // Libera a memória alocada dinamicamente para o grafo e o array `parent`
+    for (int i = 0; i <= numberOfNodes; i++) {
+        free(graph[i]);
+    }
+    free(graph);
+    free(parent);
+
+    fclose(file);
 }
 
-int main() {
-    getGraph();
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Uso: %s <nome_do_arquivo>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    getGraph(argv[1]);
     return 0;
 }
