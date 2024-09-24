@@ -13,16 +13,10 @@ O problema é modelado como um grafo bipartido onde:
 - O outro conjunto de nós representa os funcionários.
 - As arestas entre os nós de tarefas e funcionários indicam a possibilidade de um funcionário concluir uma tarefa.
 
-### Algoritmo Implementado
+### Algoritmos Implementados
 
 1. **Ford-Fulkerson**
-   - Um algoritmo clássico para encontrar o fluxo máximo em um grafo de fluxo.
-   
-
-### Funcionalidades
-
-- **Visualização do Caminho Aumentado**: A interface do usuário permite a visualização do caminho aumentado.
-- **Leitura e Impressão**: O sistema lê as entradas diretamente do usuário e exibe os resultados diretamente no console.
+2. **Edmond-Karp**
 
 ### Uso
 
@@ -33,20 +27,24 @@ O problema é modelado como um grafo bipartido onde:
    ```sh
    gcc EdmondKarp.c -o EdmondKarp
    ```
-2. **Execução**:
+2. **Rodar os casos de teste**:
+- Após a criação dos arquivos binários basta rodar o comando abaixo para executar os testes
    ```sh
-    ./FordFulkerson
-    ./EdmondKarp
+    python3 script_run_benchmark.py
     ```
-3. **Instruções**:
-    - Digite o número de funcionários.
-    - Digite o número de tarefas.
-    - Para cada tarefa, insira a lista de funcionários que podem concluir a tarefa (separados por espaço, termine com 0).
+
+3. **Execução individual(opcional)**:
+   ```sh
+    ./FordFulkerson ./testes/<arquivo de teste>.txt
+    ./EdmondKarp ./testes/<arquivo de teste>.txt
+    ```
 4. **Visualização do grafo com GraphVIZ**:
-    - Instale o pacote da biblioteca
+    - Instale o pacote da biblioteca se não tiver instalado no ambiente
     ```sh
     sudo apt-get install graphviz
     ```
+    - A fim de não prejudicar nos testes as linhas dos outputs e da geração do arquivo .dot foram comentadas, para obter a visualização final do grafo basta descomentar as linhas 110 e 112 do algoritmo EdmondKarp e as linhas 97 e 99 do algoritmo FordFulkerson
+    - Compile os código .c novamente e execute o algoritmo desejado
 
    - Gere o arquivo de imagem para visualização do grafo
 
