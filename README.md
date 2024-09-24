@@ -57,7 +57,6 @@ O problema é modelado como um grafo bipartido onde:
 ## Referências
 - https://github.com/nirajdewani/Task-Allocator-using-Maximum-Bipartite-Matching
 
-### To do list
-- [ ] Artigo
-- [ ] Cálculo função de custo
-- [ ] Benchmark
+### Resposta ao questionamento feito em sala
+- Por que não utilizar um algoritmo randômico em vez dos algoritmos apresentados neste trabalho?
+Algoritmos randômicos não são adequados para a resolução deste problema, pois, na modelagem, cada tarefa recebe uma lista de funcionários aptos a realizá-la. Sendo assim, a solução deve respeitar essa restrição. Uma abordagem randômica seria mais apropriada apenas se essa restrição não existisse, como no caso de se precisar atribuir x tarefas a x funcionários sem qualquer limitação quanto à execução de uma tarefa específica por um funcionário. Por esse motivo, os algoritmos Ford-Fulkerson e Edmonds-Karp são mais adequados para este problema.
