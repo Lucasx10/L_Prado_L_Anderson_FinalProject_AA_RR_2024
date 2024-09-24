@@ -127,42 +127,10 @@ def plot_execution_times():
     for input_value in inputs_data:
         times_edmond_karp.append(times_dict_original.get(input_value, np.nan))
         times_ford_fulkerson.append(times_dict_optimized.get(input_value, np.nan))
-        
-        # Acessar os vértices e arestas de grafo_info usando a chave do array inputs
-        key = inputs[inputs_data.index(input_value)]  # Associa o valor de input_value com a chave de `inputs`
-        
-        vertices = grafo_info.get(key, {}).get("Vértices", 0)
-        arestas = grafo_info.get(key, {}).get("Arestas", 0)
-        # Calcular VE^2
-        ve_squared = vertices * (arestas ** 2)
-        ve_squared_edmond_karp.append(ve_squared)
 
-    # Agora, podemos calcular o coeficiente para O(VE^2)
-    # Vamos assumir que o último valor de VE^2 e tempo será o ponto de referência
-    if ve_squared_edmond_karp[-1] > 0:
-        coeficiente_karp = times_edmond_karp[-1] / ve_squared_edmond_karp[-1]
-        print(f"Coeficiente para Edmond-Karp (baseado em O(VE^2)): {coeficiente_karp}")
-    else:
-        print("Não foi possível calcular o coeficiente para Edmond-Karp, VE^2 é zero.")
-
-    plot_general_comparison(inputs, times_edmond_karp, times_ford_fulkerson,ve_squared_edmond_karp)
     plot_comparison_ford_edmond(inputs, times_edmond_karp, times_ford_fulkerson)
     plot_o_Edmond(inputs, times_edmond_karp)
     plot_o_Ford(inputs, times_ford_fulkerson)
-
-def plot_general_comparison(inputs_data, times_edmond_karp, times_ford_fulkerson,ve_squared_edmond_karp):
-    plt.figure(figsize=(12, 6))
-    plt.plot(inputs_data, times_edmond_karp, marker='o', label='Média tempo execução - Edmond-karp')
-    plt.plot(inputs_data, times_ford_fulkerson, marker='o', label='Média tempo execução - Ford-Fulkerson')
-    plt.plot(inputs_data, ve_squared_edmond_karp, 'r--', label='O(VE^2)')
-    plt.xlabel('Funcionários-Tarefas')
-    plt.ylabel('Tempo de execução (segundos)')
-    plt.title('Comparação de Tempo de Execução Geral')
-    plt.legend()
-    plt.grid(True)
-    
-    plt.savefig(os.path.join('plot', 'execution_time_comparison_plot.png'))
-    print("O gráfico foi salvo como 'execution_time_comparison_plot.png'.")
 
 def plot_comparison_ford_edmond(inputs_data, times_edmond_karp, times_ford_fulkerson):
     plt.figure(figsize=(12, 6))
