@@ -1,5 +1,8 @@
 # L_Prado_L_Anderson_FinalProject_AA_RR_2024
 
+## Relatório
+- [Alocação Eficiente de Tarefas em GrafosBipartidos](https://github.com/Lucasx10/L_Prado_L_Anderson_FinalProject_AA_RR_2024/blob/main/artefatos/Aloca%C3%A7%C3%A3o%20Eficiente%20de%20Tarefas%20em%20GrafosBipartidos.pdf)
+
 ## Network Flow: Alocação de Tarefas usando Grafo Bipartido
 
 ## Descrição
